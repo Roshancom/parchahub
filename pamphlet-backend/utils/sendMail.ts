@@ -1,3 +1,6 @@
+// Suppress missing type declarations for nodemailer when @types/nodemailer isn't installed
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({

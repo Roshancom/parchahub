@@ -23,11 +23,14 @@ export interface Pamphlet {
   thumbnail_image: string | null;
   category: string | null;
   location_id: number | null;
-  location: { city: string; latitude: number; longitude: number };
+  location: {
+    city: string | null;
+    latitude: number | null;
+    longitude: number | null;
+  } | null;
   user_id: number | null;
   created_at: Date | null;
   url_key: string | null;
-  author_name: string | null;
 }
 
 /**
