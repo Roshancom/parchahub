@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-white text-neutral-900 font-body;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply bg-brand-surface border border-brand-border rounded-3xl shadow-soft;
+  }
+
+  .pill-button {
+    @apply px-4 py-2 rounded-full border border-brand-border text-sm font-medium text-neutral-700 transition-all;
+  }
+
+  .pill-button-active,
+  .pill-button:hover {
+    @apply bg-brand-blue text-white border-brand-blue;
+  }
+
+  .skeleton-shimmer {
+    @apply relative overflow-hidden bg-neutral-200;
+  }
+
+  .skeleton-shimmer::after {
+    content: "";
+    @apply absolute inset-0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+#headlessui-portal-root {
+  z-index: 100;
+  position: relative;
+}

@@ -1,0 +1,49 @@
+/**
+ * Custom error class for typed error handling
+ */
+export class AppError extends Error {
+  statusCode: number;
+  additional?: unknown;
+
+  constructor(message: string, statusCode: number = 500, additional?: unknown) {
+    super(message);
+    this.statusCode = statusCode;
+    this.additional = additional;
+    Object.setPrototypeOf(this, AppError.prototype);
+  }
+}
+
+export class BadRequestException extends AppError {
+  constructor(message?: string) {
+    super(message || 'Bad Request Exception', 400);
+    Object.setPrototypeOf(this, BadRequestException.prototype);
+  }
+}
+
+export class UnAuthorizedException extends AppError {
+  constructor(message?: string) {
+    super(message || 'Unauthorized Exception', 401);
+    Object.setPrototypeOf(this, UnAuthorizedException.prototype);
+  }
+}
+
+export class ForbiddenException extends AppError {
+  constructor(message?: string) {
+    super(message || 'Forbidden Exception', 403);
+    Object.setPrototypeOf(this, ForbiddenException.prototype);
+  }
+}
+
+export class NotFoundException extends AppError {
+  constructor(message?: string) {
+    super(message || 'Not found Exception', 404);
+    Object.setPrototypeOf(this, NotFoundException.prototype);
+  }
+}
+
+export class UnprocessableEntityException extends AppError {
+  constructor(message?: string) {
+    super(message || 'Unprocessable Entity Exception', 422);
+    Object.setPrototypeOf(this, UnprocessableEntityException.prototype);
+  }
+}
