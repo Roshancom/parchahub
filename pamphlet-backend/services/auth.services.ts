@@ -8,7 +8,10 @@ export const registerUser = async (
   email: string,
   password: string,
 ) => {
-  const existingUser = await findUserByEmail(email);
+  const normalizedEmail = email.toLowerCase().trim();
+  const trimmedName = name.trim();
+
+  const existingUser = await findUserByEmail(normalizedEmail);
 
   if (existingUser.length) {
     throw new UnAuthorizedException('Email already registered.');
@@ -16,11 +19,13 @@ export const registerUser = async (
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  return await createUser(name, email, hashedPassword);
+  return await createUser(trimmedName, normalizedEmail, hashedPassword);
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const users = await findUserByEmail(email);
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const users = await findUserByEmail(normalizedEmail);
   const user = users?.[0];
 
   const isPasswordValid = await bcrypt.compare(password, user?.password || '');
@@ -29,9 +34,16 @@ export const loginUser = async (email: string, password: string) => {
     throw new UnAuthorizedException('Invalid email or password.');
   }
 
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not configured.');
+  }
+
+  const expiresInSeconds = parseInt(process.env.JWT_EXPIRE || '604800', 10);
   const token = jwt.sign(
     { id: user.id, email: user.email },
-    process.env.JWT_SECRET || 'your-secret-key',
+    jwtSecret,
+    { expiresIn: isNaN(expiresInSeconds) ? 604800 : expiresInSeconds },
   );
 
   return {

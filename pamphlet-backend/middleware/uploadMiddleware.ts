@@ -1,9 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
+import fs from 'fs';
 import multer, { MulterError } from 'multer';
+import path from 'path';
 import { BadRequestException } from '../types/errors.js';
 
+const UPLOADS_DIR = 'uploads';
+
+// Ensure the uploads directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: 'uploads/',
+  destination: UPLOADS_DIR + '/',
   filename: (_req, file, cb) => {
     const safeOriginalName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
     cb(null, `${Date.now()}-${safeOriginalName}`);

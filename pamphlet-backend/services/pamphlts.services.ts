@@ -3,6 +3,8 @@ import path from 'path';
 import {
   createPamphletResource,
   deletePamphletById,
+  deletePamphletContacts,
+  deletePamphletLocation,
   findPamphletById,
   findPamphletByurl_key,
   findPamphletsWithFilters,
@@ -45,9 +47,21 @@ export type ContactType = {
   phone: string;
 };
 
+const sanitizeNumericParam = (
+  value: string | undefined,
+  defaultValue: number,
+  min: number,
+  max: number,
+): number => {
+  const parsed = parseInt(value || String(defaultValue), 10);
+  if (isNaN(parsed) || parsed < min) return defaultValue;
+  if (parsed > max) return max;
+  return parsed;
+};
+
 export const getPamphletsWithFilters = async (query: QueryParams) => {
-  const page = parseInt(query.page || '1');
-  const limit = parseInt(query.limit || '10');
+  const page = sanitizeNumericParam(query.page, 1, 1, 1000);
+  const limit = sanitizeNumericParam(query.limit, 10, 1, 100);
   const offset = (page - 1) * limit;
 
   const categories = query.category ? query.category.split(',') : undefined;
@@ -161,6 +175,20 @@ export const deletePamphlet = async (id: number, user_id?: number) => {
       'You are not authorized to delete this pamphlet.',
     );
   }
+
+  // Delete thumbnail file from disk
+  if (pamphlet.thumbnail_image) {
+    const oldPath = path.join('uploads', pamphlet.thumbnail_image);
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath);
+    }
+  }
+
+  // Delete associated contacts
+  await deletePamphletContacts(id);
+
+  // Delete associated location
+  await deletePamphletLocation(pamphlet.location_id);
 
   await deletePamphletById(id);
 };

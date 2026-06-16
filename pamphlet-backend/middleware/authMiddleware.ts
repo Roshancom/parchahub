@@ -24,9 +24,14 @@ const authMiddleware = (
       token = req.headers.authorization.split(' ')[1];
     }
 
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET environment variable is not configured.');
+    }
+
     const decoded = jwt.verify(
       token || '',
-      process.env.JWT_SECRET || 'your-secret-key',
+      jwtSecret,
     ) as JwtPayload;
 
     req.user = decoded;

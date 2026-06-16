@@ -2,6 +2,10 @@ import { eq } from 'drizzle-orm';
 import db from '../db/index.js';
 import { pamphlets, pamphletsLocations, users } from '../db/schema.js';
 
+export const findUserByEmail = async (email: string) => {
+  return await db.select().from(users).where(eq(users.email, email));
+};
+
 export const findAllUsers = async () => {
   return await db
     .select({

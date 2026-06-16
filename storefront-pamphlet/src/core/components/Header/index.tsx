@@ -1,63 +1,276 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag, User } from "lucide-react";
-import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  ChevronDown,
+  FileText,
+  Menu,
+  Search,
+  User,
+  X,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { getCategories } from "@/services/api";
+
+type NavCategory = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+const HOME_SECTIONS = [
+  { id: "problem", label: "Problem" },
+  { id: "solution", label: "Solution" },
+  { id: "benefits", label: "Benefits" },
+  { id: "how-it-works", label: "How It Works" },
+  { id: "use-cases", label: "Use Cases" },
+];
 
 const Header = () => {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const { isAuthenticated, user } = useAuth();
+  const [categories, setCategories] = useState<NavCategory[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const userName = user?.name || "Profile";
   const userInitial = userName.charAt(0).toUpperCase();
 
+  useEffect(() => {
+    getCategories()
+      .then((data) => setCategories(Array.isArray(data) ? data.slice(0, 6) : []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setCatDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    setMobileMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const closeMobile = () => setMobileMenuOpen(false);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/categories?search=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-brand-border">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 md:gap-6">
-        <Link
-          href="/"
-          className="shrink-0 font-heading text-2xl font-extrabold tracking-tight text-neutral-900"
-        >
-          <Image src="./logo.svg" alt="company-logo" width={50} height={50} />
-        </Link>
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-neutral-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-heading text-xl font-extrabold tracking-tight text-neutral-900 shrink-0"
+          >
+            <div className="w-8 h-8 rounded-lg bg-brand-blue flex items-center justify-center">
+              <FileText size={16} className="text-white" />
+            </div>
+            ParchaHub
+          </Link>
 
-        <div className="flex-1 hidden md:flex items-center">
-          <label className="w-full relative">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
-              size={18}
-            />
-            <input
-              type="search"
-              placeholder="Search pamphlets, categories, locations..."
-              className="w-full rounded-full border border-brand-border bg-white py-2.5 pl-11 pr-4 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
-            />
-          </label>
-        </div>
+          <nav className="hidden md:flex items-center gap-6">
+            {isHomePage &&
+              HOME_SECTIONS.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+                >
+                  {section.label}
+                </button>
+              ))}
 
-        <div className="ml-auto flex items-center gap-2">
-          {isAuthenticated ? (
-            <Link
-              href="/profile"
-              className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white px-3 py-1.5 text-sm font-semibold text-neutral-700 hover:border-brand-blue hover:text-brand-blue transition-colors"
-            >
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold">
-                {userInitial}
-              </span>
-              <span className="max-w-[90px] truncate hidden sm:inline">
-                {userName}
-              </span>
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white px-4 py-2 text-sm font-semibold text-neutral-700 hover:border-brand-blue hover:text-brand-blue transition-colors"
-            >
-              <User size={16} />
-              Login
-            </Link>
-          )}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setCatDropdownOpen(!catDropdownOpen)}
+                className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+              >
+                Categories
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    catDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {catDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl border border-neutral-100 shadow-soft p-2 space-y-0.5">
+                  <Link
+                    href="/categories"
+                    onClick={() => setCatDropdownOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-sm text-neutral-700 hover:bg-neutral-50 hover:text-brand-blue transition-colors font-medium"
+                  >
+                    All Categories
+                  </Link>
+                  <div className="h-px bg-neutral-100 my-1" />
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.id}
+                      href={`/categories?category=${cat.slug}`}
+                      onClick={() => setCatDropdownOpen(false)}
+                      className="block px-3 py-2 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 hover:text-brand-blue transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                  {categories.length === 0 && (
+                    <p className="px-3 py-2 text-sm text-neutral-400">Loading...</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleSearch} className="relative">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-48 lg:w-56 rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue focus:bg-white transition-all"
+              />
+            </form>
+
+            {isAuthenticated ? (
+              <Link
+                href="/profile"
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-700 hover:border-brand-blue hover:text-brand-blue transition-colors"
+              >
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold">
+                  {userInitial}
+                </span>
+                <span className="max-w-[90px] truncate hidden sm:inline">
+                  {userName}
+                </span>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="text-sm font-semibold text-neutral-600 hover:text-neutral-900 transition-colors px-3 py-1.5"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark px-4 py-2 rounded-full transition-all hover:shadow-lift"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </nav>
+
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-neutral-100 bg-white max-h-[80vh] overflow-y-auto">
+          <div className="px-4 py-4 space-y-1">
+            <form onSubmit={handleSearch} className="relative mb-3">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search pamphlets..."
+                className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              />
+            </form>
+
+            {isHomePage &&
+              HOME_SECTIONS.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className="block w-full text-left px-3 py-2.5 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                >
+                  {section.label}
+                </button>
+              ))}
+
+            <div className="pt-2 pb-1 px-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+              Categories
+            </div>
+            <Link
+              href="/categories"
+              onClick={closeMobile}
+              className="block px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+            >
+              All Categories
+            </Link>
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/categories?category=${cat.slug}`}
+                onClick={closeMobile}
+                className="block px-3 py-2.5 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition-colors"
+              >
+                {cat.name}
+              </Link>
+            ))}
+
+            <div className="pt-3 mt-3 border-t border-neutral-100 space-y-2">
+              {isAuthenticated ? (
+                <Link
+                  href="/profile"
+                  onClick={closeMobile}
+                  className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
+                >
+                  Profile
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={closeMobile}
+                    className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={closeMobile}
+                    className="block text-center text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark py-2.5 rounded-full transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

@@ -37,11 +37,32 @@ const locationSchema = z
     longitude: Number((value as { longitude?: number }).longitude ?? 0),
   }));
 
+// Validate url_key format: only lowercase alphanumeric, hyphens, and underscores
+const urlKeyPattern = /^[a-z0-9_-]+$/;
+
+// Strip HTML/script tags to prevent XSS
+const stripHtml = (value: string): string =>
+  value.replace(/<[^>]*>/g, '').trim();
+
 export const pamphletSchema = z.object({
-  title: z.string().nonempty('Title is required'),
-  short_description: z.string().optional(),
-  category: z.string().nonempty('Category is required'),
+  title: z
+    .string()
+    .trim()
+    .min(1, 'Title is required')
+    .max(255)
+    .transform((v) => stripHtml(v)),
+  short_description: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v ? stripHtml(v) : v)),
+  category: z.string().trim().min(1, 'Category is required'),
   location: locationSchema,
   thumbnail_image: z.string().optional(),
-  url_key: z.string().nonempty('URL Key is required'),
+  url_key: z
+    .string()
+    .trim()
+    .min(1, 'URL Key is required')
+    .max(255)
+    .regex(urlKeyPattern, 'URL Key must contain only lowercase letters, numbers, hyphens, and underscores'),
 });

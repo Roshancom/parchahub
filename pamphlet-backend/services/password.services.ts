@@ -3,11 +3,16 @@ import bcrypt from 'bcryptjs';
 import { findUserByEmail } from '../repository/auth.repository.js';
 import sendMail from '../utils/sendMail.js';
 import { updateUserPasswordById } from '../repository/users.repository.js';
+import { UnprocessableEntityException } from '../types/errors.js';
 
 export const resetPassword = async (email: string) => {
   const user = await findUserByEmail(email);
 
-  console.log({ email, user });
+  // Always return a success message regardless of whether the email exists
+  // This prevents email enumeration attacks
+  if (!user || user.length === 0 || !user[0]?.id) {
+    return { message: 'If account exists, reset link sent to email' };
+  }
 
   // generate token
   const token = jwt.sign(
@@ -48,12 +53,23 @@ export const resetPassword = async (email: string) => {
 };
 
 export const updatePassword = async (token: string, password: string) => {
-  const decoded = jwt.verify(
-    token,
-    process.env.JWT_RESET_SECRET || '',
-  ) as JwtPayload;
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_RESET_SECRET || '',
+    ) as JwtPayload;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  await updateUserPasswordById(decoded.id, hashedPassword);
+    await updateUserPasswordById(decoded.id, hashedPassword);
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new UnprocessableEntityException(
+        'Reset link has expired. Please request a new one.',
+      );
+    }
+    throw new UnprocessableEntityException(
+      'Invalid or malformed reset token.',
+    );
+  }
 };

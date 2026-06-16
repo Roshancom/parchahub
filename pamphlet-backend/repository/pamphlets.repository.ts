@@ -22,14 +22,14 @@ export const findPamphletsWithFilters = async ({
 }: Filters) => {
   const conditions = [];
 
-  console.log({ categories });
-
   if (categories?.length) {
     conditions.push(inArray(pamphlets.category, categories));
   }
 
   if (location) {
-    conditions.push(like(pamphletsLocations.city, `%${location}%`));
+    // Escape SQL LIKE wildcards to prevent injection
+    const escapedLocation = location.replace(/[%_]/g, '\\$&');
+    conditions.push(like(pamphletsLocations.city, `%${escapedLocation}%`));
   }
 
   const data = await db
@@ -253,6 +253,7 @@ export const findPamphletById = async (id: number) => {
     .select({
       id: pamphlets.id,
       user_id: pamphlets.user_id,
+      location_id: pamphlets.location_id,
       thumbnail_image: pamphlets.thumbnail_image,
     })
     .from(pamphlets)
@@ -263,4 +264,21 @@ export const findPamphletById = async (id: number) => {
 
 export const deletePamphletById = async (id: number) => {
   return await db.delete(pamphlets).where(eq(pamphlets.id, id));
+};
+
+export const deletePamphletsByUserId = async (userId: number) => {
+  return await db.delete(pamphlets).where(eq(pamphlets.user_id, userId));
+};
+
+export const deletePamphletContacts = async (pamphletId: number) => {
+  return await db
+    .delete(pamphletContacts)
+    .where(eq(pamphletContacts.pamphlet_id, pamphletId));
+};
+
+export const deletePamphletLocation = async (locationId: number | null | undefined) => {
+  if (!locationId) return;
+  return await db
+    .delete(pamphletsLocations)
+    .where(eq(pamphletsLocations.id, locationId));
 };

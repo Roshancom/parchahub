@@ -8,30 +8,67 @@ import {
   getUsersById,
   updateUser,
 } from '../services/users.services.js';
-import { ForbiddenException } from '../types/errors.js';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '../types/errors.js';
 import { asyncHandler } from '../utils/asyncHandlers.js';
 import { errorSuccessMessage, successResponse } from '../utils/helpers.js';
 
 export const getUsersHandler = asyncHandler(
   async (_: Request, res: Response) => {
     const result = await getUsers();
-    successResponse(res, 200, result, 'User retrieved successfully.');
+    successResponse(res, 200, result, 'Users retrieved successfully.');
   },
 );
 
 export const getUserByIdHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const result = await getUsersById(Number(id));
-    successResponse(res, 200, result, 'User retrieved successfully.');
+    const userId = Number(id);
+
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID.');
+    }
+
+    const result = await getUsersById(userId);
+
+    if (!result || result.length === 0) {
+      throw new NotFoundException('User not found.');
+    }
+
+    successResponse(res, 200, result[0], 'User retrieved successfully.');
   },
 );
 
 export const updateUserByIdHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
+    const userId = Number(id);
+    const requestingUserId = req.user?.id;
+
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID.');
+    }
+
+    // Only allow users to update their own profile
+    if (userId !== requestingUserId) {
+      throw new ForbiddenException(
+        'You are not authorized to update this user.',
+      );
+    }
+
+    const existingUser = await getUsersById(userId);
+    if (!existingUser || existingUser.length === 0) {
+      throw new NotFoundException('User not found.');
+    }
+
     const { name, email } = req.body;
-    await updateUser(Number(id), { name, email });
+    await updateUser(userId, {
+      name: name?.trim(),
+      email: email?.toLowerCase().trim(),
+    });
     errorSuccessMessage({
       res,
       status: 200,
@@ -44,7 +81,26 @@ export const updateUserByIdHandler = asyncHandler(
 export const deleteUserByIdHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    await deleteUser(Number(id));
+    const userId = Number(id);
+    const requestingUserId = req.user?.id;
+
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID.');
+    }
+
+    // Only allow users to delete their own profile
+    if (userId !== requestingUserId) {
+      throw new ForbiddenException(
+        'You are not authorized to delete this user.',
+      );
+    }
+
+    const existingUser = await getUsersById(userId);
+    if (!existingUser || existingUser.length === 0) {
+      throw new NotFoundException('User not found.');
+    }
+
+    await deleteUser(userId);
     errorSuccessMessage({
       res,
       status: 200,
