@@ -41,3 +41,6 @@ next-env.d.ts
 coverage
 .vercel
 .turbo
+
+# Monorepo - exclude other services
+pamphlet-backend
