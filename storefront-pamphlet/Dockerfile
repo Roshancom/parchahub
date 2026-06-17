@@ -5,7 +5,7 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install only production dependencies first for better caching
-COPY package.json yarn.lock ./
+COPY storefront-pamphlet/package.json storefront-pamphlet/yarn.lock ./
 RUN yarn install --frozen-lockfile --production=false
 
 # --------------------------------------
@@ -15,7 +15,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY storefront-pamphlet/ .
 
 # Set build-time defaults (overridden by Railway env vars at runtime)
 ARG NEXT_PUBLIC_API_BASE_URL
