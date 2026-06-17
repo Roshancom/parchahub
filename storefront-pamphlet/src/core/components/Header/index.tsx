@@ -8,10 +8,9 @@ import {
   FileText,
   Menu,
   Search,
-  User,
+  Shield,
   X,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 import { getCategories } from "@/services/api";
 
 type NavCategory = {
@@ -31,15 +30,11 @@ const HOME_SECTIONS = [
 const Header = () => {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  const { isAuthenticated, user } = useAuth();
   const [categories, setCategories] = useState<NavCategory[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const userName = user?.name || "Profile";
-  const userInitial = userName.charAt(0).toUpperCase();
 
   useEffect(() => {
     getCategories()
@@ -151,34 +146,13 @@ const Header = () => {
               />
             </form>
 
-            {isAuthenticated ? (
-              <Link
-                href="/profile"
-                className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-700 hover:border-brand-blue hover:text-brand-blue transition-colors"
-              >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold">
-                  {userInitial}
-                </span>
-                <span className="max-w-[90px] truncate hidden sm:inline">
-                  {userName}
-                </span>
-              </Link>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className="text-sm font-semibold text-neutral-600 hover:text-neutral-900 transition-colors px-3 py-1.5"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark px-4 py-2 rounded-full transition-all hover:shadow-lift"
-                >
-                  Get Started
-                </Link>
-              </div>
-            )}
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 hover:text-brand-blue transition-colors border border-neutral-200 rounded-full px-4 py-2 hover:border-brand-blue/30"
+            >
+              <Shield size={14} />
+              Admin
+            </Link>
           </nav>
 
           <button
@@ -240,33 +214,14 @@ const Header = () => {
               </Link>
             ))}
 
-            <div className="pt-3 mt-3 border-t border-neutral-100 space-y-2">
-              {isAuthenticated ? (
-                <Link
-                  href="/profile"
-                  onClick={closeMobile}
-                  className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
-                >
-                  Profile
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={closeMobile}
-                    className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={closeMobile}
-                    className="block text-center text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark py-2.5 rounded-full transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
+            <div className="pt-3 mt-3 border-t border-neutral-100">
+              <Link
+                href="/admin/dashboard"
+                onClick={closeMobile}
+                className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
+              >
+                Admin Panel
+              </Link>
             </div>
           </div>
         </div>

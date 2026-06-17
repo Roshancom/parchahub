@@ -309,7 +309,7 @@ const CreatePamphlet = ({
                 {errors.location?.city.message}
               </p>
             )}
-            <input type="hidden" {...register("location?.city")} />
+            <input type="hidden" {...register("location.city")} />
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import "../index.css";
-import Layout from "@/core/components/Layout";
 import { AuthProvider } from "@/context/AuthContext";
 import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 
@@ -23,9 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${plusJakarta.variable}`}>
-        <AuthProvider>
-          <Layout>{children}</Layout>
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

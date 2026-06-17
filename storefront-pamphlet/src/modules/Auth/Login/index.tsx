@@ -36,7 +36,7 @@ const Login = () => {
 
     try {
       await login(values);
-      router.push("/");
+      router.push("/admin/dashboard");
     } catch (error) {
       const message =
         error instanceof Error
@@ -56,7 +56,7 @@ const Login = () => {
       subtitle="Log in to manage your saved pamphlets and uploads."
       altCtaText="New to Pamphlet?"
       altCtaLabel="Create an account"
-      altCtaHref="/register"
+      altCtaHref="/admin/register"
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <FormField

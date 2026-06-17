@@ -10,12 +10,13 @@ export const useRequireAuth = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.replace("/login");
+      router.replace("/admin/login");
     }
   }, [isAuthenticated, router]);
 
   return {
     isAuthenticated,
+    loading: !isAuthenticated,
     isReady: isAuthenticated,
   };
 };
@@ -26,7 +27,7 @@ export const useGuestOnly = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/profile");
+      router.replace("/admin/dashboard");
     }
   }, [isAuthenticated, router]);
 

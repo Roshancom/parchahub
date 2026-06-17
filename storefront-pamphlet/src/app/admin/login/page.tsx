@@ -1,5 +1,5 @@
 import Login from "@/modules/Auth/Login";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   return <Login />;
 }

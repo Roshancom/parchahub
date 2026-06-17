@@ -1,13 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 
 import { useState } from "react";
 import AuthShell from "@/modules/Auth/components/AuthShell";
 import API, { requestPasswordReset } from "@/services/api";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const ForgotPasswordPage = () => {
+function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -79,7 +79,7 @@ const ForgotPasswordPage = () => {
     };
 
     API.post("/reset-password/confirm", payload)
-      .then(() => router.push("/login"))
+      .then(() => router.push("/admin/login"))
       .catch((err) => {
         const message =
           err instanceof Error
@@ -138,7 +138,7 @@ const ForgotPasswordPage = () => {
       subtitle="Enter your email and we will send you a reset link."
       altCtaText="Remember your password?"
       altCtaLabel="Sign in"
-      altCtaHref="/login"
+      altCtaHref="/admin/login"
     >
       <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <label className="block">
@@ -174,6 +174,12 @@ const ForgotPasswordPage = () => {
       ) : null}
     </AuthShell>
   );
-};
+}
 
-export default ForgotPasswordPage;
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin w-8 h-8 border-2 border-brand-blue border-t-transparent rounded-full" /></div>}>
+      <ForgotPasswordForm />
+    </Suspense>
+  );
+}

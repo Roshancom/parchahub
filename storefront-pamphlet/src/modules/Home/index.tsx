@@ -376,18 +376,18 @@ const Home = () => {
               >
                 Categories
               </button>
-              <Link
-                href="/login"
+              {/* <Link
+                href="/admin/login"
                 className="text-sm font-semibold text-neutral-700 hover:text-neutral-900 transition-colors"
               >
                 Sign In
               </Link>
               <Link
-                href="/register"
+                href="/admin/register"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark px-4 py-2 rounded-full transition-all hover:shadow-lift"
               >
                 Get Started <ArrowRight size={14} />
-              </Link>
+              </Link> */}
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -427,13 +427,13 @@ const Home = () => {
               ))}
               <div className="pt-3 border-t border-neutral-100 space-y-2">
                 <Link
-                  href="/login"
+                  href="/admin/login"
                   className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
-                  href="/register"
+                  href="/admin/register"
                   className="block text-center text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueDark py-2.5 rounded-full transition-colors"
                 >
                   Get Started
@@ -464,12 +464,6 @@ const Home = () => {
               costs. No waste.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blueDark text-white font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-lift text-base"
-              >
-                Get Started Free <ArrowRight size={16} />
-              </Link>
               <button
                 onClick={() => scrollToSection("solution")}
                 className="inline-flex items-center gap-2 text-neutral-700 font-semibold px-8 py-3.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-all text-base"
@@ -794,14 +788,6 @@ const Home = () => {
               </FadeInSection>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blueDark text-white font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-lift text-base"
-            >
-              Start Creating Free <ArrowRight size={16} />
-            </Link>
-          </div>
         </div>
       </section>
       {/* 7. Use Cases */}
@@ -842,7 +828,7 @@ const Home = () => {
                 And many more organizations across every sector
               </p>
               <Link
-                href="/register"
+                href="/admin/register"
                 className="inline-flex items-center gap-1 text-sm font-semibold text-brand-blue hover:text-brand-blueDark transition-colors"
               >
                 See how ParchaHub fits your organization{" "}
@@ -1086,12 +1072,6 @@ const Home = () => {
               resources with digital pamphlets.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-brand-blueDark font-semibold px-8 py-3.5 rounded-full transition-all text-base hover:shadow-lg"
-              >
-                Start Your Digital Transformation <ArrowRight size={16} />
-              </Link>
               <button
                 onClick={() => scrollToSection("how-it-works")}
                 className="inline-flex items-center gap-2 text-white/80 hover:text-white font-semibold px-8 py-3.5 rounded-full border border-white/20 hover:border-white/40 transition-all text-base"

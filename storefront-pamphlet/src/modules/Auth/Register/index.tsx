@@ -60,7 +60,7 @@ const Register = () => {
 
     try {
       await registerUser(values);
-      router.push("/login");
+      router.push("/admin/login");
     } catch (error) {
       const message =
         error instanceof Error
@@ -80,7 +80,7 @@ const Register = () => {
       subtitle="Join the platform and access trusted resources in minutes."
       altCtaText="Already have an account?"
       altCtaLabel="Sign in"
-      altCtaHref="/login"
+      altCtaHref="/admin/login"
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <FormField
