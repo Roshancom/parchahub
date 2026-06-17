@@ -425,7 +425,15 @@ const Home = () => {
                   {item}
                 </button>
               ))}
-              <div className="pt-3 border-t border-neutral-100 space-y-2">
+
+              <button
+                onClick={() => routes.push("/categories")}
+                className="block w-full text-left text-sm text-neutral-600 hover:text-neutral-900 py-2 transition-colors"
+              >
+                Categories
+              </button>
+
+              {/* <div className="pt-3 border-t border-neutral-100 space-y-2">
                 <Link
                   href="/admin/login"
                   className="block text-center text-sm font-semibold text-neutral-700 py-2.5 rounded-full border border-neutral-200 hover:border-neutral-300 transition-colors"
@@ -438,7 +446,7 @@ const Home = () => {
                 >
                   Get Started
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

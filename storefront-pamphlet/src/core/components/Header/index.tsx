@@ -3,14 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ChevronDown,
-  FileText,
-  Menu,
-  Search,
-  Shield,
-  X,
-} from "lucide-react";
+import { ChevronDown, FileText, Menu, Search, Shield, X } from "lucide-react";
 import { getCategories } from "@/services/api";
 
 type NavCategory = {
@@ -38,13 +31,18 @@ const Header = () => {
 
   useEffect(() => {
     getCategories()
-      .then((data) => setCategories(Array.isArray(data) ? data.slice(0, 6) : []))
+      .then((data) =>
+        setCategories(Array.isArray(data) ? data.slice(0, 6) : []),
+      )
       .catch(() => {});
   }, []);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setCatDropdownOpen(false);
       }
     };
@@ -126,7 +124,9 @@ const Header = () => {
                     </Link>
                   ))}
                   {categories.length === 0 && (
-                    <p className="px-3 py-2 text-sm text-neutral-400">Loading...</p>
+                    <p className="px-3 py-2 text-sm text-neutral-400">
+                      Loading...
+                    </p>
                   )}
                 </div>
               )}
@@ -146,13 +146,13 @@ const Header = () => {
               />
             </form>
 
-            <Link
+            {/* <Link
               href="/admin/dashboard"
               className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 hover:text-brand-blue transition-colors border border-neutral-200 rounded-full px-4 py-2 hover:border-brand-blue/30"
             >
               <Shield size={14} />
               Admin
-            </Link>
+            </Link> */}
           </nav>
 
           <button
