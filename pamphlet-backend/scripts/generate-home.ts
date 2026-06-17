@@ -384,7 +384,7 @@ const Home = () => {
                 <div className="p-4 text-sm font-semibold text-green-600 uppercase tracking-wide text-center">ParchaHub</div>
               </div>
               {comparisonData.map((row, i) => (
-                <div key={i} className={`grid grid-cols-3 ${i < comparisonData.length - 1 ? "border-b border-neutral-50" : ""}`}>
+                <div key={i} className={\`grid grid-cols-3 \${i < comparisonData.length - 1 ? "border-b border-neutral-50" : ""}\`}>
                   <div className="p-4 text-sm text-neutral-700 font-medium">{row.traditional.split(" ")[0]}</div>
                   <div className="p-4 text-sm text-neutral-500 text-center border-x border-neutral-50 flex items-center justify-center gap-2">
                     <X size={14} className="text-red-400 shrink-0" />
@@ -431,7 +431,7 @@ const Home = () => {
             <div className="bg-neutral-900 rounded-3xl p-6 md:p-10 shadow-soft max-w-5xl mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
                 {["Dashboard", "Create", "Analytics", "Manage", "Users"].map((tab, i) => (
-                  <div key={i} className={`px-4 py-2 rounded-lg text-xs font-semibold text-center transition-colors ${i === 0 ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white"}`}>
+                  <div key={i} className={\`px-4 py-2 rounded-lg text-xs font-semibold text-center transition-colors \${i === 0 ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white"}\`}>
                     {tab}
                   </div>
                 ))}
@@ -460,7 +460,7 @@ const Home = () => {
                     <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/5">
                       <p className="text-xs text-neutral-400">{card.label}</p>
                       <p className="text-2xl font-bold text-white mt-1">{card.value}</p>
-                      <p className={`text-xs mt-1 ${card.color}`}>{card.change}</p>
+                      <p className={\`text-xs mt-1 \${card.color}\`}>{card.change}</p>
                     </div>
                   ))}
                 </div>
@@ -755,5 +755,4 @@ const targetPath = '/home/roshan-neupane/projects/parchahub/storefront-pamphlet/
 fs.writeFileSync(targetPath, content, 'utf-8');
 console.log('Written to', targetPath);
 console.log('Size:', Buffer.byteLength(content, 'utf-8'), 'bytes');
-`;
 
