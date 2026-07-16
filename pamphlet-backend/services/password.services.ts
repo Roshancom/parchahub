@@ -68,8 +68,6 @@ export const updatePassword = async (token: string, password: string) => {
         'Reset link has expired. Please request a new one.',
       );
     }
-    throw new UnprocessableEntityException(
-      'Invalid or malformed reset token.',
-    );
+    throw new UnprocessableEntityException('Invalid or malformed reset token.');
   }
 };
