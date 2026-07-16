@@ -12,10 +12,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+const corsOrigins = process.env.CORS_ORIGINS;
+
 // CORS configuration
-const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
-  : ['http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = corsOrigins
+  ? corsOrigins
+      .replace(/[[\]]/g, '') // strip [ and ]
+      .split(',')
+      .map((o) => o.trim().replace(/^['"]|['"]$/g, '')) // strip leading/trailing quotes
+  : ['http://localhost:5173'];
 
 app.use(
   cors({
